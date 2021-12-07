@@ -1,3 +1,5 @@
+from typing import Callable
+
 from warcraftlogs.api import WarcraftLogsAPI
 from warcraftlogs.utils import api_error_msg
 
@@ -75,11 +77,11 @@ class FightAnalyser:
 
         return self.api.query_all_event_pages(query)
 
-    def enemy_uptime_damage_taken(self, tainted_count: int, damage_taken_events: list[dict]):
+    def enemy_uptime_damage_taken(self, enemy_count: int, damage_taken_events: list[dict]):
         result = []
 
-        for n in range(1, tainted_count + 1):
-            if tainted_count > 1:
+        for n in range(1, enemy_count + 1):
+            if enemy_count > 1:
                 events = [e for e in damage_taken_events if e['targetInstance'] == n]
             else:
                 # targetInstance not set if mob is unique
@@ -88,9 +90,11 @@ class FightAnalyser:
             attackers = set([e['sourceID'] for e in events])
 
             if events:
+                # calculate total amount and duration of damage dealt to enemy
                 damage_taken = sum([e['amount'] for e in events])
                 duration = self._time_between(events[0]['timestamp'], events[-1]['timestamp'])
                 killed = True in ['overkill' in e for e in events]
+                # calculate who dealt how much damage to enemy
                 distribution = []
                 for a in attackers:
                     damage = sum([e['amount'] for e in events if e['sourceID'] == a])
@@ -123,28 +127,33 @@ class FightAnalyser:
 
         return result
 
-    def print_enemy_uptime(self, enemy_game_id: int, enemy_name: str):
+    def print_enemy_uptime(self, enemy_game_id: int, enemy_name: str, not_dead_text: str = ''):
         fights, actor_names = self._get_encounter_fights()
         actor_names = self._convert_actors_to_dict(actor_names)
 
         print(f'**Damage done to {enemy_name} for report {self.report_id}**')
 
         for x in range(0, len(fights)):
-            # get number of spawned enemy and their reportID
-            enemies = list(filter(lambda c: c['gameID'] == enemy_game_id, fights[x]['enemyNPCs']))[0]
+            print(f'\n*{fights[x]["name"]} attempt #{x + 1}*')
+
+            try:
+                # get number of spawned enemy and their reportID
+                enemies = list(filter(lambda c: c['gameID'] == enemy_game_id, fights[x]['enemyNPCs']))[0]
+            except IndexError:
+                # enemy didn't spawn this attempt
+                continue
 
             events = self.get_enemy_damage_taken(enemies['id'], fights[x]['startTime'], fights[x]['endTime'])
             stats = self.enemy_uptime_damage_taken(enemies['instanceCount'], events)
 
-            print(f'\n*{fights[x]["name"]} attempt #{x + 1}*')
-
             for y in range(0, len(stats)):
-                rip = ' and died' if stats[y]['killed'] else ''
+                rip = ' and died' if stats[y]['killed'] else not_dead_text
 
                 if stats[y]['duration']:
                     print(f'\n{y + 1}. {enemy_name} took {stats[y]["damage"]} damage '
                           f'over {stats[y]["duration"]} seconds{rip}.')
 
+                    # resolve actor IDs to actor names and print damage distribution
                     for actor in stats[y]['distribution']:
                         actor_owner_id = actor_names[actor[0]]['petOwner']
 
@@ -158,6 +167,12 @@ class FightAnalyser:
 
             print(f'\nSee https://tbc.warcraftlogs.com/reports/{self.report_id}#fight={fights[x]["id"]}'
                   f'&type=damage-taken&hostility=1&source={enemies["id"]}&view=events')
+
+    def full_report(self, functions: list[Callable]):
+        for f in functions:
+            f()
+            print()
+            print()
 
 
 class VashjAnalyser(FightAnalyser):
@@ -225,7 +240,10 @@ class VashjAnalyser(FightAnalyser):
         self.print_enemy_uptime(22056, 'Coilfang Strider')
 
     def print_tainted_uptime(self):
-        self.print_enemy_uptime(22009, 'Tainted Elemental')
+        self.print_enemy_uptime(22009, 'Tainted Elemental', not_dead_text=' and despawned')
+
+    def full_report(self):
+        super().full_report([self.print_core_dunk_times, self.print_tainted_uptime, self.print_strider_uptime])
 
 
 class KaelthasAnalyser(FightAnalyser):
@@ -233,4 +251,4 @@ class KaelthasAnalyser(FightAnalyser):
         super().__init__(api, report_id, 733)
 
     def print_phoenix_egg_uptime(self):
-        self.print_enemy_uptime(21364, 'Phoenix Egg')
+        self.print_enemy_uptime(21364, 'Phoenix Egg', not_dead_text=' and hatched')
