@@ -7,4 +7,5 @@ if __name__ == '__main__':
     api = WarcraftLogsAPI(at)
     v = VashjAnalyser(api, report_id)
     v.print_core_dunk_times()
+    v.print_tainted_elemental_damage_taken()
     print()
