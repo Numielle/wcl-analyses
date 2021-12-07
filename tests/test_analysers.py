@@ -221,6 +221,15 @@ class TestVashjAnalyser:
                  'abilityGameID': 27021, 'hitType': 1, 'amount': 65, 'mitigated': 403, 'unmitigatedAmount': 1030,
                  'sourceMarker': 2}]
 
+    @pytest.fixture
+    def single_phoenix_egg_damage_taken_events(self):
+        return [{'timestamp': 7957411, 'type': 'damage', 'sourceID': 13, 'targetID': 202, 'abilityGameID': 26862,
+                 'hitType': 2, 'amount': 1521, 'unmitigatedAmount': 990},
+                {'timestamp': 7957586, 'type': 'damage', 'sourceID': 30, 'targetID': 202, 'abilityGameID': 33983,
+                 'hitType': 1, 'amount': 664, 'mitigated': 426, 'unmitigatedAmount': 1090},
+                {'timestamp': 7957675, 'type': 'damage', 'sourceID': 30, 'targetID': 202, 'abilityGameID': 1,
+                 'hitType': 1, 'amount': 311, 'mitigated': 199, 'unmitigatedAmount': 510}]
+
     def test_core_timings(self, vashj_analyser, tainted_core_debuff_events):
         expected = [12.6, 27.9, 8.9, 10.2]
         actual = vashj_analyser.core_timings(tainted_core_debuff_events)
@@ -257,5 +266,14 @@ class TestVashjAnalyser:
                      'distribution': [(11, 6507, 93.1), (6, 479, 6.9)]}]
 
         actual = vashj_analyser.enemy_uptime_damage_taken(8, tainted_elementals_damage_taken_events)
+
+        assert actual == expected
+
+    def test_enemy_uptime_damage_taken_single_enemy(self, vashj_analyser, single_phoenix_egg_damage_taken_events):
+        expected = [{'damage': 2496,
+                     'distribution': [(13, 1521, 60.9), (30, 975, 39.1)],
+                     'duration': 0.3,
+                     'killed': False}]
+        actual = vashj_analyser.enemy_uptime_damage_taken(1, single_phoenix_egg_damage_taken_events)
 
         assert actual == expected
