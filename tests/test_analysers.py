@@ -256,6 +256,6 @@ class TestVashjAnalyser:
                     {'damage': 6986, 'killed': True, 'duration': 6.5,
                      'distribution': [(11, 6507, 93.1), (6, 479, 6.9)]}]
 
-        actual = vashj_analyser.tainted_elemental_stats(8, tainted_elementals_damage_taken_events)
+        actual = vashj_analyser.enemy_uptime_damage_taken(8, tainted_elementals_damage_taken_events)
 
         assert actual == expected

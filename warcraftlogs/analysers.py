@@ -74,6 +74,7 @@ class FightAnalyser:
 
         return self.api.query_all_event_pages(query)
 
+
 class VashjAnalyser(FightAnalyser):
     def __init__(self, api: WarcraftLogsAPI, report_id):
         super().__init__(api, report_id, 628)
@@ -135,7 +136,7 @@ class VashjAnalyser(FightAnalyser):
             print(f'See https://tbc.warcraftlogs.com/reports/{self.report_id}#fight={fights[x]["id"]}'
                   f'&type=auras&spells=debuffs&ability={tainted_core_debuff_id}&view=events')
 
-    def tainted_elemental_stats(self, tainted_count: int, damage_taken_events: list[dict]):
+    def enemy_uptime_damage_taken(self, tainted_count: int, damage_taken_events: list[dict]):
         result = []
 
         for n in range(1, tainted_count + 1):
@@ -167,32 +168,6 @@ class VashjAnalyser(FightAnalyser):
 
         return result
 
-    def print_tainted_elemental_damage_taken(self):
-        tainted_game_id = 22009
-        fights, actor_names = self._get_encounter_fights()
-
-        print(f'**Damage done to Tainted Elementals for report {self.report_id}**')
-
-        for x in range(0, len(fights)):
-            # get number of spawned Tainted Elementals and their reportID
-            tainted_elementals = list(filter(lambda c: c['gameID'] == tainted_game_id, fights[x]['enemyNPCs']))[0]
-
-            events = self.get_enemy_damage_taken(tainted_elementals['id'], fights[x]['startTime'], fights[x]['endTime'])
-            stats = self.tainted_elemental_stats(tainted_elementals['instanceCount'], events)
-
-            print(f'\n*Vashj attempt #{x + 1}*')
-
-            for y in range(0, len(stats)):
-                rip = 'died' if stats[y]['killed'] else 'despawned'
-
-                if stats[y]['duration']:
-                    print(f'{y + 1}. elemental took {stats[y]["damage"]} damage over {stats[y]["duration"]} seconds and {rip}.')
-                else:
-                    print(f'{y + 1}. elemental took {stats[y]["damage"]} damage and {rip}')
-
-            print(f'See https://tbc.warcraftlogs.com/reports/{self.report_id}#fight={fights[x]["id"]}'
-                  f'&type=damage-taken&hostility=1&source={tainted_elementals["id"]}&view=events')
-
     @staticmethod
     def _convert_actors_to_dict(actors: list[dict]):
         result = {}
@@ -204,19 +179,18 @@ class VashjAnalyser(FightAnalyser):
 
         return result
 
-    def print_strider_uptime(self):
-        strider_game_id = 22056
+    def print_enemy_uptime(self, enemy_game_id: int, enemy_name: str):
         fights, actor_names = self._get_encounter_fights()
         actor_names = self._convert_actors_to_dict(actor_names)
 
-        print(f'**Damage done to Coilfang Striders for report {self.report_id}**')
+        print(f'**Damage done to {enemy_name} for report {self.report_id}**')
 
         for x in range(0, len(fights)):
-            # get number of spawned Coilfang Striders and their reportID
-            coilfang_striders = list(filter(lambda c: c['gameID'] == strider_game_id, fights[x]['enemyNPCs']))[0]
+            # get number of spawned enemy and their reportID
+            enemies = list(filter(lambda c: c['gameID'] == enemy_game_id, fights[x]['enemyNPCs']))[0]
 
-            events = self.get_enemy_damage_taken(coilfang_striders['id'], fights[x]['startTime'], fights[x]['endTime'])
-            stats = self.tainted_elemental_stats(coilfang_striders['instanceCount'], events)
+            events = self.get_enemy_damage_taken(enemies['id'], fights[x]['startTime'], fights[x]['endTime'])
+            stats = self.enemy_uptime_damage_taken(enemies['instanceCount'], events)
 
             print(f'\n*Vashj attempt #{x + 1}*')
 
@@ -224,7 +198,7 @@ class VashjAnalyser(FightAnalyser):
                 rip = ' and died' if stats[y]['killed'] else ''
 
                 if stats[y]['duration']:
-                    print(f'\n{y + 1}. Strider took {stats[y]["damage"]} damage over {stats[y]["duration"]} seconds{rip}.')
+                    print(f'\n{y + 1}. {enemy_name} took {stats[y]["damage"]} damage over {stats[y]["duration"]} seconds{rip}.')
 
                     for actor in stats[y]['distribution']:
                         actor_owner_id = actor_names[actor[0]]['petOwner']
@@ -233,10 +207,15 @@ class VashjAnalyser(FightAnalyser):
                             name = f'{actor_names[actor[0]]["name"]} ({actor_names[actor_owner_id]["name"]})'
                         else:
                             name = actor_names[actor[0]]['name']
-                        print(f'  {name} dealth {actor[1]} damage to Coilfang Strider {y + 1} ({actor[2]}%).')
+                        print(f'  {name} dealth {actor[1]} damage to {enemy_name} {y + 1} ({actor[2]}%).')
                 else:
-                    print(f'{y + 1}. took {stats[y]["damage"]} damage.')
+                    print(f'\n{y + 1}. {enemy_name} took {stats[y]["damage"]} damage.')
 
-            print(f'See https://tbc.warcraftlogs.com/reports/{self.report_id}#fight={fights[x]["id"]}'
-                  f'&type=damage-taken&hostility=1&source={coilfang_striders["id"]}&view=events')
+            print(f'\nSee https://tbc.warcraftlogs.com/reports/{self.report_id}#fight={fights[x]["id"]}'
+                  f'&type=damage-taken&hostility=1&source={enemies["id"]}&view=events')
 
+    def print_strider_uptime(self):
+        self.print_enemy_uptime(22056, 'Coilfang Strider')
+
+    def print_tainted_uptime(self):
+        self.print_enemy_uptime(22009, 'Tainted Elemental')
