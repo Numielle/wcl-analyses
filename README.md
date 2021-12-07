@@ -6,7 +6,7 @@ The application was written and tested with Python 3.9.
 ## Features
 
 Dumps analyses for certain fights to stdout.
-Currently, supported fights and analyses are listed below.
+Currently supported fights and analyses are listed below.
 
 ### SSC & TK
 #### Lady Vashj

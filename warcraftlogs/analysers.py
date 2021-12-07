@@ -161,7 +161,7 @@ class FightAnalyser:
                             name = f'{actor_names[actor[0]]["name"]} ({actor_names[actor_owner_id]["name"]})'
                         else:
                             name = actor_names[actor[0]]['name']
-                        print(f'  {name} dealth {actor[1]} damage to {enemy_name} {y + 1} ({actor[2]}%).')
+                        print(f'  {name} dealt {actor[1]} damage to {enemy_name} {y + 1} ({actor[2]}%).')
                 else:
                     print(f'\n{y + 1}. {enemy_name} took {stats[y]["damage"]} damage.')
 
