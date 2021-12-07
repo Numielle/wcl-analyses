@@ -12,7 +12,7 @@ class FightAnalyser:
     def _time_between(start_time, end_time):
         return round((end_time - start_time) / 1000, 1)
 
-    def _get_encounter_fights(self) -> dict:
+    def _get_encounter_fights(self) -> tuple[list[dict], list[dict]]:
         query = f'''{{ 
                 reportData {{
                     report (code: "{self.report_id}") {{
@@ -42,7 +42,8 @@ class FightAnalyser:
         r = self.api.query(query)
 
         if r.status_code == 200:
-            return r.json()['data']['reportData']['report']['fights'], r.json()['data']['reportData']['report']['masterData']['actors']
+            return r.json()['data']['reportData']['report']['fights'], \
+                   r.json()['data']['reportData']['report']['masterData']['actors']
         else:
             raise RuntimeError(api_error_msg(self._get_encounter_fights.__name__, r))
 
@@ -73,68 +74,6 @@ class FightAnalyser:
         }}'''
 
         return self.api.query_all_event_pages(query)
-
-
-class VashjAnalyser(FightAnalyser):
-    def __init__(self, api: WarcraftLogsAPI, report_id):
-        super().__init__(api, report_id, 628)
-
-    def core_timings(self, tainted_core_debuff_events: list[dict]):
-        result = []
-
-        if not len(tainted_core_debuff_events):
-            return result
-
-        pickup_time = tainted_core_debuff_events[0]['timestamp']
-        passes = 0
-
-        for n in range(2, len(tainted_core_debuff_events), 2):
-            # calculate 'flight time' as difference between current debuff gain and previous debuff drop off
-            flight_time = tainted_core_debuff_events[n]['timestamp'] - tainted_core_debuff_events[n - 1]['timestamp']
-
-            # assumption: if the 'flight time' of a core is longer than 2 seconds, it's the next core
-            if flight_time > 2000:
-                # assumption: if core wasn't passed at least two times, then the core carrier died
-                if passes < 2:
-                    result.append(None)
-                else:
-                    result.append(self._time_between(pickup_time, tainted_core_debuff_events[n - 1]['timestamp']))
-
-                pickup_time = tainted_core_debuff_events[n]['timestamp']
-                passes = 0
-            else:
-                passes = passes + 1
-
-        # add last core time as well
-        if passes < 2:
-            result.append(None)
-        else:
-            result.append(self._time_between(pickup_time, tainted_core_debuff_events[-1]['timestamp']))
-
-        return result
-
-    def print_core_dunk_times(self):
-        tainted_core_debuff_id = 38132
-        fights, actor_names = self._get_encounter_fights()
-
-        print(f'**Time it takes for the core to be picked up and dunked for report {self.report_id}**')
-        print('cores passed less than two times are considered lost')
-
-        for x in range(0, len(fights)):
-            tainted_core_debuff_events = self.get_debuff_events(tainted_core_debuff_id, fights[x]['startTime'],
-                                                                fights[x]['endTime'])
-            timings = self.core_timings(tainted_core_debuff_events)
-
-            print(f'\n*Vashj attempt #{x + 1}*')
-
-            for y in range(0, len(timings)):
-                if timings[y]:
-                    print(f'{y + 1}. core took {timings[y]} sec')
-                else:
-                    print(f'{y + 1}. core lost to player death?')
-
-            print(f'See https://tbc.warcraftlogs.com/reports/{self.report_id}#fight={fights[x]["id"]}'
-                  f'&type=auras&spells=debuffs&ability={tainted_core_debuff_id}&view=events')
 
     def enemy_uptime_damage_taken(self, tainted_count: int, damage_taken_events: list[dict]):
         result = []
@@ -192,13 +131,14 @@ class VashjAnalyser(FightAnalyser):
             events = self.get_enemy_damage_taken(enemies['id'], fights[x]['startTime'], fights[x]['endTime'])
             stats = self.enemy_uptime_damage_taken(enemies['instanceCount'], events)
 
-            print(f'\n*Vashj attempt #{x + 1}*')
+            print(f'\n*{fights[x]["name"]} attempt #{x + 1}*')
 
             for y in range(0, len(stats)):
                 rip = ' and died' if stats[y]['killed'] else ''
 
                 if stats[y]['duration']:
-                    print(f'\n{y + 1}. {enemy_name} took {stats[y]["damage"]} damage over {stats[y]["duration"]} seconds{rip}.')
+                    print(f'\n{y + 1}. {enemy_name} took {stats[y]["damage"]} damage '
+                          f'over {stats[y]["duration"]} seconds{rip}.')
 
                     for actor in stats[y]['distribution']:
                         actor_owner_id = actor_names[actor[0]]['petOwner']
@@ -213,6 +153,68 @@ class VashjAnalyser(FightAnalyser):
 
             print(f'\nSee https://tbc.warcraftlogs.com/reports/{self.report_id}#fight={fights[x]["id"]}'
                   f'&type=damage-taken&hostility=1&source={enemies["id"]}&view=events')
+
+
+class VashjAnalyser(FightAnalyser):
+    def __init__(self, api: WarcraftLogsAPI, report_id):
+        super().__init__(api, report_id, 628)
+
+    def core_timings(self, tainted_core_debuff_events: list[dict]):
+        result = []
+
+        if not len(tainted_core_debuff_events):
+            return result
+
+        pickup_time = tainted_core_debuff_events[0]['timestamp']
+        passes = 0
+
+        for n in range(2, len(tainted_core_debuff_events), 2):
+            # calculate 'flight time' as difference between current debuff gain and previous debuff drop off
+            flight_time = tainted_core_debuff_events[n]['timestamp'] - tainted_core_debuff_events[n - 1]['timestamp']
+
+            # assumption: if the 'flight time' of a core is longer than 2 seconds, it's the next core
+            if flight_time > 2000:
+                # assumption: if core wasn't passed at least two times, then the core carrier died
+                if passes < 2:
+                    result.append(None)
+                else:
+                    result.append(self._time_between(pickup_time, tainted_core_debuff_events[n - 1]['timestamp']))
+
+                pickup_time = tainted_core_debuff_events[n]['timestamp']
+                passes = 0
+            else:
+                passes = passes + 1
+
+        # add last core time as well
+        if passes < 2:
+            result.append(None)
+        else:
+            result.append(self._time_between(pickup_time, tainted_core_debuff_events[-1]['timestamp']))
+
+        return result
+
+    def print_core_dunk_times(self):
+        tainted_core_debuff_id = 38132
+        fights, actor_names = self._get_encounter_fights()
+
+        print(f'**Time it takes for the core to be picked up and dunked for report {self.report_id}**')
+        print('cores passed less than two times are considered lost')
+
+        for x in range(0, len(fights)):
+            tainted_core_debuff_events = self.get_debuff_events(tainted_core_debuff_id, fights[x]['startTime'],
+                                                                fights[x]['endTime'])
+            timings = self.core_timings(tainted_core_debuff_events)
+
+            print(f'\n*{fights[x]["name"]} attempt #{x + 1}*')
+
+            for y in range(0, len(timings)):
+                if timings[y]:
+                    print(f'{y + 1}. core took {timings[y]} sec')
+                else:
+                    print(f'{y + 1}. core lost to player death?')
+
+            print(f'See https://tbc.warcraftlogs.com/reports/{self.report_id}#fight={fights[x]["id"]}'
+                  f'&type=auras&spells=debuffs&ability={tainted_core_debuff_id}&view=events')
 
     def print_strider_uptime(self):
         self.print_enemy_uptime(22056, 'Coilfang Strider')
