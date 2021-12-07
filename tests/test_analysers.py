@@ -248,7 +248,7 @@ class TestVashjAnalyser:
 
         assert actual == expected
 
-    def test_tainted_elemental_stats(self, vashj_analyser, tainted_elementals_damage_taken_events):
+    def test_enemy_uptime_damage_taken(self, vashj_analyser, tainted_elementals_damage_taken_events):
         expected = [{'damage': 3934, 'killed': False, 'duration': 5.2,
                      'distribution': [(19, 2287, 58.1), (28, 1647, 41.9)]},
                     {'damage': 6986, 'killed': True, 'duration': 4.2,
