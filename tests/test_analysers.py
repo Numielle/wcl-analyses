@@ -240,14 +240,21 @@ class TestVashjAnalyser:
         assert actual == expected
 
     def test_tainted_elemental_stats(self, vashj_analyser, tainted_elementals_damage_taken_events):
-        expected = [{'damage': 3934, 'killed': False, 'duration': 5.2},
-                    {'damage': 6986, 'killed': True, 'duration': 4.2},
-                    {'damage': 0, 'killed': False, 'duration': None},
-                    {'damage': 6986, 'killed': True, 'duration': 7.2},
-                    {'damage': 6986, 'killed': True, 'duration': 7.5},
-                    {'damage': 5207, 'killed': False, 'duration': 7.9},
-                    {'damage': 2140, 'killed': False, 'duration': 4.4},
-                    {'damage': 6986, 'killed': True, 'duration': 6.5}]
+        expected = [{'damage': 3934, 'killed': False, 'duration': 5.2,
+                     'distribution': [(19, 2287, 58.1), (28, 1647, 41.9)]},
+                    {'damage': 6986, 'killed': True, 'duration': 4.2,
+                     'distribution': [(19, 3463, 49.6), (28, 1726, 24.7), (20, 984, 14.1), (24, 813, 11.6)]},
+                    {'damage': 0, 'killed': False, 'duration': None, 'distribution': []},
+                    {'damage': 6986, 'killed': True, 'duration': 7.2,
+                     'distribution': [(19, 3994, 57.2), (24, 1803, 25.8), (28, 1189, 17.0)]},
+                    {'damage': 6986, 'killed': True, 'duration': 7.5,
+                     'distribution': [(11, 4296, 61.5), (6, 2690, 38.5)]},
+                    {'damage': 5207, 'killed': False, 'duration': 7.9,
+                     'distribution': [(23, 4944, 94.9), (30, 263, 5.1)]},
+                    {'damage': 2140, 'killed': False, 'duration': 4.4,
+                     'distribution': [(24, 2140, 100.0)]},
+                    {'damage': 6986, 'killed': True, 'duration': 6.5,
+                     'distribution': [(11, 6507, 93.1), (6, 479, 6.9)]}]
 
         actual = vashj_analyser.tainted_elemental_stats(8, tainted_elementals_damage_taken_events)
 

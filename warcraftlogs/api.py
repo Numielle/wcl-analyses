@@ -25,6 +25,27 @@ class WarcraftLogsAPI:
 
         return requests.post(self.public_api, json={'query': query}, headers=headers)
 
+    def query_all_event_pages(self, query: str) -> list[dict]:
+        result = []
+
+        while True:
+            r = self.query(query)
+
+            if r.status_code == 200:
+                j = r.json()
+                result.extend(j['data']['reportData']['report']['events']['data'])
+
+                if not j['data']['reportData']['report']['events']['nextPageTimestamp']:
+                    break
+                else:
+                    # TODO implement grabbing all pages
+                    # will skip it for now and raise error if there are more pages
+                    raise RuntimeError('implement retrieving all pages!')
+            else:
+                raise RuntimeError(api_error_msg(self.query_all_event_pages.__name__, r))
+
+        return result
+
     @staticmethod
     def load_credentials(filename: str = 'credentials.json') -> dict[str, str]:
         with open(filename) as json_file:
