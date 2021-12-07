@@ -79,7 +79,12 @@ class FightAnalyser:
         result = []
 
         for n in range(1, tainted_count + 1):
-            events = [e for e in damage_taken_events if e['targetInstance'] == n]
+            if tainted_count > 1:
+                events = [e for e in damage_taken_events if e['targetInstance'] == n]
+            else:
+                # targetInstance not set if mob is unique
+                events = damage_taken_events
+
             attackers = set([e['sourceID'] for e in events])
 
             if events:
@@ -221,3 +226,11 @@ class VashjAnalyser(FightAnalyser):
 
     def print_tainted_uptime(self):
         self.print_enemy_uptime(22009, 'Tainted Elemental')
+
+
+class KaelthasAnalyser(FightAnalyser):
+    def __init__(self, api: WarcraftLogsAPI, report_id):
+        super().__init__(api, report_id, 733)
+
+    def print_phoenix_egg_uptime(self):
+        self.print_enemy_uptime(21364, 'Phoenix Egg')
