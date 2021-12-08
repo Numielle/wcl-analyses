@@ -21,13 +21,13 @@ Currently supported fights and analyses are listed below.
 ## How to get started
 
 * Create [an API client](https://www.warcraftlogs.com/api/clients/) and save the `client_id` and the `client_secret` (see [here](https://www.warcraftlogs.com/api/docs)).
-* Create a virtualenv (optional; e.g. `python3 -m venv venv`)
+* Create and activate a virtualenv (optional; e.g. `python3 -m venv venv && source venv/bin/activate`)
 * Install requirements via `pip install -r requirements.txt`
 * Provide API credentials (see below)
 * Invoke the application via `python main.py $REPORT_ID`
 
 
-### Authorisation via credentials
+### Authorisation via Client ID and Client Secret
 
 Create a file named `credentials.json` using the values from creating an API client (see above):
 
