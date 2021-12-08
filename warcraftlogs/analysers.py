@@ -81,18 +81,16 @@ class FightAnalyser:
         result = []
 
         for n in range(1, enemy_count + 1):
-            if enemy_count > 1:
-                events = [e for e in damage_taken_events if e['targetInstance'] == n]
-            else:
-                # targetInstance not set if mob is unique
-                events = damage_taken_events
+            events = self.get_events_for_target_instance(damage_taken_events, enemy_count, n)
 
             attackers = set([e['sourceID'] for e in events])
 
             if events:
                 # calculate total amount and duration of damage dealt to enemy
                 damage_taken = sum([e['amount'] for e in events])
-                duration = self._time_between(events[0]['timestamp'], events[-1]['timestamp'])
+                first_attack = events[0]['timestamp']
+                last_attack = events[-1]['timestamp']
+                duration = self._time_between(first_attack, last_attack)
                 killed = True in ['overkill' in e for e in events]
                 # calculate who dealt how much damage to enemy
                 distribution = []
@@ -103,18 +101,30 @@ class FightAnalyser:
                 distribution.sort(key=lambda x: x[1], reverse=True)
             else:
                 damage_taken = 0
+                first_attack = None
+                last_attack = None
                 duration = None
                 killed = False
                 distribution = []
 
             result.append({
                 'damage': damage_taken,
+                'first_attack': first_attack,
+                'last_attack': last_attack,
                 'duration': duration,
                 'killed': killed,
                 'distribution': distribution
             })
 
         return result
+
+    def get_events_for_target_instance(self, damage_taken_events, enemy_count, target_instance):
+        if enemy_count > 1:
+            events = [e for e in damage_taken_events if e['targetInstance'] == target_instance]
+        else:
+            # targetInstance not set if mob is unique
+            events = damage_taken_events
+        return events
 
     @staticmethod
     def _convert_actors_to_dict(actors: list[dict]):
@@ -152,6 +162,14 @@ class FightAnalyser:
                 if stats[y]['duration']:
                     print(f'\n{y + 1}. {enemy_name} took {stats[y]["damage"]} damage '
                           f'over {stats[y]["duration"]} seconds{rip}.')
+                    url_source_id = f'{enemies["id"]}.{y + 1}' if enemies['instanceCount'] > 1 else enemies['id']
+
+                    link = f'https://classic.warcraftlogs.com/reports/{self.report_id}#fight={fights[x]["id"]}'\
+                           f'&type=damage-taken&hostility=1&source={url_source_id}&start={stats[y]["first_attack"]}'\
+                           f'&end={stats[y]["last_attack"]}&by=target'
+
+                    print(f'    Damage done: {link}')
+                    print(f'    Timeline:    {link}&view=timeline')
 
                     # resolve actor IDs to actor names and print damage distribution
                     for actor in stats[y]['distribution']:
@@ -161,12 +179,13 @@ class FightAnalyser:
                             name = f'{actor_names[actor[0]]["name"]} ({actor_names[actor_owner_id]["name"]})'
                         else:
                             name = actor_names[actor[0]]['name']
-                        print(f'  {name} dealt {actor[1]} damage to {enemy_name} {y + 1} ({actor[2]}%).')
+                        # TODO do we need this?
+                        # print(f'  {name} dealt {actor[1]} damage to {enemy_name} {y + 1} ({actor[2]}%).')
                 else:
                     print(f'\n{y + 1}. {enemy_name} took {stats[y]["damage"]} damage.')
 
-            print(f'\nSee https://tbc.warcraftlogs.com/reports/{self.report_id}#fight={fights[x]["id"]}'
-                  f'&type=damage-taken&hostility=1&source={enemies["id"]}&view=events')
+            # print(f'\nSee https://tbc.warcraftlogs.com/reports/{self.report_id}#fight={fights[x]["id"]}'
+            #       f'&type=damage-taken&hostility=1&source={enemies["id"]}&view=events')
 
     def full_report(self, functions: list[Callable]):
         for f in functions:

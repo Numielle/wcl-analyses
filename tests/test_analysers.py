@@ -170,56 +170,7 @@ class TestVashjAnalyser:
                  'abilityGameID': 1, 'hitType': 1, 'amount': 148, 'mitigated': 95, 'unmitigatedAmount': 243},
                 {'timestamp': 11161576, 'type': 'damage', 'sourceID': 28, 'targetID': 183, 'targetInstance': 4,
                  'abilityGameID': 1, 'hitType': 1, 'amount': 112, 'mitigated': 93, 'unmitigatedAmount': 237,
-                 'overkill': 32},
-                {'timestamp': 11224471, 'type': 'damage', 'sourceID': 11, 'targetID': 183, 'targetInstance': 5,
-                 'abilityGameID': 27019, 'hitType': 1, 'amount': 649, 'unmitigatedAmount': 649, 'sourceMarker': 2},
-                {'timestamp': 11226044, 'type': 'damage', 'sourceID': 6, 'targetID': 183, 'targetInstance': 5,
-                 'abilityGameID': 26985, 'hitType': 1, 'amount': 872, 'unmitigatedAmount': 872},
-                {'timestamp': 11228205, 'type': 'damage', 'sourceID': 11, 'targetID': 183, 'targetInstance': 5,
-                 'abilityGameID': 75, 'hitType': 1, 'amount': 513, 'mitigated': 330, 'unmitigatedAmount': 843,
-                 'sourceMarker': 2},
-                {'timestamp': 11228905, 'type': 'damage', 'sourceID': 11, 'targetID': 183, 'targetInstance': 5,
-                 'abilityGameID': 27021, 'hitType': 1, 'amount': 645, 'mitigated': 414, 'unmitigatedAmount': 1059,
-                 'sourceMarker': 2},
-                {'timestamp': 11230304, 'type': 'damage', 'sourceID': 11, 'targetID': 183, 'targetInstance': 5,
-                 'abilityGameID': 75, 'hitType': 4, 'amount': 535, 'mitigated': 429, 'unmitigatedAmount': 964,
-                 'blocked': 51, 'sourceMarker': 2},
-                {'timestamp': 11230448, 'type': 'damage', 'sourceID': 6, 'targetID': 183, 'targetInstance': 5,
-                 'abilityGameID': 26985, 'hitType': 1, 'amount': 906, 'unmitigatedAmount': 906},
-                {'timestamp': 11231406, 'type': 'damage', 'sourceID': 11, 'targetID': 183, 'targetInstance': 5,
-                 'abilityGameID': 34120, 'hitType': 2, 'amount': 1323, 'unmitigatedAmount': 913, 'sourceMarker': 2},
-                {'timestamp': 11231820, 'type': 'damage', 'sourceID': 11, 'targetID': 183, 'targetInstance': 5,
-                 'abilityGameID': 27019, 'hitType': 1, 'amount': 631, 'unmitigatedAmount': 631, 'sourceMarker': 2},
-                {'timestamp': 11231947, 'type': 'damage', 'sourceID': 6, 'targetID': 183, 'targetInstance': 5,
-                 'abilityGameID': 26985, 'hitType': 2, 'amount': 912, 'unmitigatedAmount': 863, 'overkill': 816},
-                {'timestamp': 11288125, 'type': 'damage', 'sourceID': 23, 'targetID': 183, 'targetInstance': 6,
-                 'abilityGameID': 27209, 'hitType': 1, 'amount': 1900, 'unmitigatedAmount': 1900},
-                {'timestamp': 11290215, 'type': 'damage', 'sourceID': 23, 'targetID': 183, 'targetInstance': 6,
-                 'abilityGameID': 30546, 'hitType': 1, 'amount': 1274, 'unmitigatedAmount': 1274},
-                {'timestamp': 11294836, 'type': 'damage', 'sourceID': 30, 'targetID': 183, 'targetInstance': 6,
-                 'abilityGameID': 27267, 'hitType': 1, 'amount': 263, 'unmitigatedAmount': 263},
-                {'timestamp': 11295998, 'type': 'damage', 'sourceID': 23, 'targetID': 183, 'targetInstance': 6,
-                 'abilityGameID': 27209, 'hitType': 1, 'amount': 1770, 'unmitigatedAmount': 1770},
-                {'timestamp': 11319140, 'type': 'damage', 'sourceID': 24, 'targetID': 183, 'targetInstance': 7,
-                 'abilityGameID': 25375, 'hitType': 1, 'amount': 1027, 'unmitigatedAmount': 1027},
-                {'timestamp': 11323528, 'type': 'damage', 'sourceID': 24, 'targetID': 183, 'targetInstance': 7,
-                 'abilityGameID': 25364, 'hitType': 1, 'amount': 1113, 'unmitigatedAmount': 1113},
-                {'timestamp': 11339424, 'type': 'damage', 'sourceID': 11, 'targetID': 183, 'targetInstance': 8,
-                 'abilityGameID': 27019, 'hitType': 2, 'amount': 1427, 'unmitigatedAmount': 600, 'sourceMarker': 2},
-                {'timestamp': 11342395, 'type': 'damage', 'sourceID': 11, 'targetID': 183, 'targetInstance': 8,
-                 'abilityGameID': 75, 'hitType': 2, 'amount': 1336, 'unmitigatedAmount': 923, 'sourceMarker': 2},
-                {'timestamp': 11343505, 'type': 'damage', 'sourceID': 11, 'targetID': 183, 'targetInstance': 8,
-                 'abilityGameID': 34120, 'hitType': 2, 'amount': 1278, 'unmitigatedAmount': 883, 'sourceMarker': 2},
-                {'timestamp': 11344429, 'type': 'damage', 'sourceID': 6, 'targetID': 183, 'targetInstance': 8,
-                 'abilityGameID': 26988, 'hitType': 1, 'amount': 479, 'unmitigatedAmount': 479},
-                {'timestamp': 11345018, 'type': 'damage', 'sourceID': 11, 'targetID': 183, 'targetInstance': 8,
-                 'abilityGameID': 34120, 'hitType': 2, 'amount': 1193, 'unmitigatedAmount': 824, 'sourceMarker': 2},
-                {'timestamp': 11345397, 'type': 'damage', 'sourceID': 11, 'targetID': 183, 'targetInstance': 8,
-                 'abilityGameID': 75, 'hitType': 2, 'amount': 1208, 'unmitigatedAmount': 834, 'overkill': 1,
-                 'sourceMarker': 2},
-                {'timestamp': 11345939, 'type': 'damage', 'sourceID': 11, 'targetID': 183, 'targetInstance': 8,
-                 'abilityGameID': 27021, 'hitType': 1, 'amount': 65, 'mitigated': 403, 'unmitigatedAmount': 1030,
-                 'sourceMarker': 2}]
+                 'overkill': 32}]
 
     @pytest.fixture
     def single_phoenix_egg_damage_taken_events(self):
@@ -249,29 +200,25 @@ class TestVashjAnalyser:
         assert actual == expected
 
     def test_enemy_uptime_damage_taken(self, vashj_analyser, tainted_elementals_damage_taken_events):
-        expected = [{'damage': 3934, 'killed': False, 'duration': 5.2,
-                     'distribution': [(19, 2287, 58.1), (28, 1647, 41.9)]},
-                    {'damage': 6986, 'killed': True, 'duration': 4.2,
-                     'distribution': [(19, 3463, 49.6), (28, 1726, 24.7), (20, 984, 14.1), (24, 813, 11.6)]},
-                    {'damage': 0, 'killed': False, 'duration': None, 'distribution': []},
-                    {'damage': 6986, 'killed': True, 'duration': 7.2,
-                     'distribution': [(19, 3994, 57.2), (24, 1803, 25.8), (28, 1189, 17.0)]},
-                    {'damage': 6986, 'killed': True, 'duration': 7.5,
-                     'distribution': [(11, 4296, 61.5), (6, 2690, 38.5)]},
-                    {'damage': 5207, 'killed': False, 'duration': 7.9,
-                     'distribution': [(23, 4944, 94.9), (30, 263, 5.1)]},
-                    {'damage': 2140, 'killed': False, 'duration': 4.4,
-                     'distribution': [(24, 2140, 100.0)]},
-                    {'damage': 6986, 'killed': True, 'duration': 6.5,
-                     'distribution': [(11, 6507, 93.1), (6, 479, 6.9)]}]
+        expected = [
+            {'damage': 3934, 'killed': False, 'first_attack': 11048453, 'last_attack': 11053629, 'duration': 5.2,
+             'distribution': [(19, 2287, 58.1), (28, 1647, 41.9)]},
+            {'damage': 6986, 'killed': True, 'first_attack': 11064967, 'last_attack': 11069139, 'duration': 4.2,
+             'distribution': [(19, 3463, 49.6), (28, 1726, 24.7), (20, 984, 14.1), (24, 813, 11.6)]},
+            {'damage': 0, 'killed': False, 'first_attack': None, 'last_attack': None, 'duration': None,
+             'distribution': []},
+            {'damage': 6986, 'killed': True, 'first_attack': 11154373, 'last_attack': 11161576, 'duration': 7.2,
+             'distribution': [(19, 3994, 57.2), (24, 1803, 25.8), (28, 1189, 17.0)]}]
 
-        actual = vashj_analyser.enemy_uptime_damage_taken(8, tainted_elementals_damage_taken_events)
+        actual = vashj_analyser.enemy_uptime_damage_taken(4, tainted_elementals_damage_taken_events)
 
         assert actual == expected
 
     def test_enemy_uptime_damage_taken_single_enemy(self, vashj_analyser, single_phoenix_egg_damage_taken_events):
         expected = [{'damage': 2496,
                      'distribution': [(13, 1521, 60.9), (30, 975, 39.1)],
+                     'first_attack': 7957411,
+                     'last_attack': 7957675,
                      'duration': 0.3,
                      'killed': False}]
         actual = vashj_analyser.enemy_uptime_damage_taken(1, single_phoenix_egg_damage_taken_events)
